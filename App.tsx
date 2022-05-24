@@ -21,7 +21,7 @@ export default function App() {
         outputRange={["0deg", "90deg", "275deg", "0deg"]}
         transformKey="rotate"
       >
-        <Text>Animated 4 </Text>
+        <Text>Animated 45 </Text>
       </AnimatedContainer>
 
       <AnimatedContainer
