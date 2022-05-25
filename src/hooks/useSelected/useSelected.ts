@@ -7,12 +7,17 @@ import {
   UseSelectedProps,
   UseSelectedReturnValues,
 } from './useSelected.types';
+import { normaliseData } from './utils';
 
 const useSelected = <DataType>(
   props: UseSelectedProps<DataType>
 ): UseSelectedReturnValues<DataType> => {
   const { data, selectType, getItemId, withAutoSelect = true } = props;
   const [selected, setSelected] = useState<SelectedObject>({});
+
+  const selectCount = useMemo(() => Object.values(selected).filter((i) => i).length, [selected]);
+  const dataTotal = useMemo(() => data.length, [data]);
+  const allSelected = useMemo(() => selectCount === dataTotal, [selectCount, dataTotal]);
 
   const memoisedGetItemId = useMemo(() => getItemId, [getItemId]);
 
@@ -72,28 +77,29 @@ const useSelected = <DataType>(
     setSelected({});
   }, []);
 
-  const selectData = useCallback(() => {
-    const normalisedData = data.reduce<Record<string, DataType>>(
-      (dataAsObject, item, index) => {
-        const id =
-          selectType === SelectTypeEnum.BY_ID ? memoisedGetItemId(item) : index;
-        return {
-          ...dataAsObject,
-          [id]: item,
-        };
-      },
-      {}
-    );
+  const selectAll = useCallback(() => {
+    const normalisedData = normaliseData(data, memoisedGetItemId, selectType, true);
+    setSelected(normalisedData);
+  }, [data, memoisedGetItemId]);
 
-    return Object.entries(selected).reduce<DataType[]>(
-      (dataArray, [key, value]) => {
-        if (value) {
-          return [...dataArray, normalisedData[key]];
-        }
-        return dataArray;
-      },
-      []
-    );
+  const toggleSelectAll = useCallback(() => {
+    allSelected ? clear() : selectAll();
+  }, [allSelected, selectAll, clear]);
+
+  const getNormalisedData = useCallback(
+    () => normaliseData(data, memoisedGetItemId, selectType, 'item') as Record<string, DataType>,
+    [data, selectType, memoisedGetItemId]
+  );
+
+  const selectData = useCallback(() => {
+    const normalisedData = getNormalisedData();
+
+    return Object.entries(selected).reduce<DataType[]>((dataArray, [key, value]) => {
+      if (value) {
+        return [...dataArray, normalisedData[key]];
+      }
+      return dataArray;
+    }, []);
   }, [selected, data, memoisedGetItemId]);
 
   const selectedData = useMemo(() => {
@@ -111,6 +117,12 @@ const useSelected = <DataType>(
     selectedData,
     selectData,
     clear,
+    selectAll,
+    selectCount,
+    dataTotal,
+    allSelected,
+    toggleSelectAll,
+    getNormalisedData,
   };
 };
 

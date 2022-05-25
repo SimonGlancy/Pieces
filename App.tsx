@@ -20,8 +20,6 @@ const data = [
   { id: '4777', name: 'Four' },
 ];
 
-const data2 = ['One', 'Two', 'Three', 'Four'];
-
 type Item = {
   id: string;
   name: string;
@@ -38,16 +36,14 @@ function SelectButton(props: SelectButtonProps) {
   return (
     <Pressable style={[styles.item]} onPress={onPress}>
       <AnimatedContainer active>
-        <Text style={{ color: isSelected ? 'coral' : 'black' }}>
-          {item.name}
-        </Text>
+        <Text style={{ color: isSelected ? 'coral' : 'black' }}>{item.name}</Text>
       </AnimatedContainer>
     </Pressable>
   );
 }
 
 export default function App() {
-  const { getIsSelected, toggle } = useSelected({
+  const { getIsSelected, toggle, allSelected, toggleSelectAll } = useSelected({
     data,
     selectType: SelectTypeEnum.BY_ID,
     getItemId: (item) => item.id,
@@ -55,6 +51,11 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <SelectButton
+        item={{ name: allSelected ? 'De select all' : 'Select All', id: 'all' }}
+        onPress={toggleSelectAll}
+        isSelected={allSelected}
+      />
       {data.map((item, index) => {
         return (
           <SelectButton

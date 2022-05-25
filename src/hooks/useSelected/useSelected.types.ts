@@ -16,11 +16,7 @@ export type SelectedObject = Record<string, boolean>;
 
 export type SelectFunction<DataType> = (item: DataType, index: number) => void;
 
-export type UpdateFunction<DataType> = (
-  item: DataType,
-  index: number,
-  value: boolean
-) => void;
+export type UpdateFunction<DataType> = (item: DataType, index: number, value: boolean) => void;
 
 // For object data structures the byId select mode is used, this used with the getId prop
 // create an entry in the selected object keyed of a specific id attribute
@@ -43,12 +39,21 @@ export type UseSelectedProps<DataType> = {
 };
 
 export type UseSelectedReturnValues<DataType> = {
-  select: SelectFunction<DataType>;
-  deselect: SelectFunction<DataType>;
-  getIsSelected: (item: DataType, index: number) => boolean;
-  toggle: SelectFunction<DataType>;
-  selectedData?: DataType[];
-  selectData: () => DataType[];
-  selected: SelectedObject;
-  clear: () => void;
+  select: SelectFunction<DataType>; // select an individual item
+  deselect: SelectFunction<DataType>; // de select an individual item
+  toggle: SelectFunction<DataType>; // toggle selected value true -> false -> true
+  getIsSelected: (item: DataType, index: number) => boolean; // returns whether item is in selected object
+  clear: () => void; // clears all values in the selected object
+  selectAll: () => void; // selects all of data (transforms array into normalised data set Record<string, true>)
+  toggleSelectAll: () => void; // allows all items to be selected or deselected
+
+  selectedData?: DataType[]; // array of items in selected object / can be disabled by withAutoSelect = false
+  selectData: () => DataType[]; // function that returns selectedData
+  selected: SelectedObject; // Selected Object, keyed either of the chosen id or the index
+
+  selectCount: number; // number of selected items
+  dataTotal: number; // number of items in data array
+  allSelected: boolean; // are all items selected
+
+  getNormalisedData: () => Record<string, DataType>;
 };
