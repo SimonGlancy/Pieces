@@ -27,6 +27,7 @@
     "eslint": "^8.16.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-config-universe": "^11.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prettier": "^4.0.0",
@@ -43,14 +44,10 @@
       "pre-commit": "lint-staged"
     }
   },
+  "eslintConfig": {
+    "extends": "universe/native"
+  },
   "lint-staged": {
     "*.{ts,tsx}": "eslint"
-  },
-  "prettier": {
-    "quoteProps": "consistent",
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "useTabs": false
   }
 }

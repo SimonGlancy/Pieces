@@ -1,52 +1,70 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AnimatedContainer } from './src';
+import { useSelected, SelectTypeEnum } from './src/hooks';
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 64,
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
+  item: { padding: 32, borderWidth: 2, borderColor: 'black' },
 });
 
+const data = [
+  { id: 'apple', name: 'One' },
+  { id: 'orange', name: 'Two' },
+  { id: '3eeeeee', name: 'Three' },
+  { id: '4777', name: 'Four' },
+];
+
+const data2 = ['One', 'Two', 'Three', 'Four'];
+
+type Item = {
+  id: string;
+  name: string;
+};
+
+type SelectButtonProps = {
+  item: Item;
+  onPress: () => void;
+  isSelected: boolean;
+};
+
+function SelectButton(props: SelectButtonProps) {
+  const { item, onPress, isSelected } = props;
+  return (
+    <Pressable style={[styles.item]} onPress={onPress}>
+      <AnimatedContainer active>
+        <Text style={{ color: isSelected ? 'coral' : 'black' }}>
+          {item.name}
+        </Text>
+      </AnimatedContainer>
+    </Pressable>
+  );
+}
+
 export default function App() {
+  const { getIsSelected, toggle } = useSelected({
+    data,
+    selectType: SelectTypeEnum.BY_ID,
+    getItemId: (item) => item.id,
+  });
+
   return (
     <View style={styles.container}>
-      <AnimatedContainer active>
-        <Text>Animated</Text>
-      </AnimatedContainer>
-      <AnimatedContainer active forwardDelay={500} outputRange={[0, 1]}>
-        <Text>Animated 2</Text>
-      </AnimatedContainer>
-      <AnimatedContainer active forwardDelay={1000} outputRange={[0, 1]}>
-        <Text>Animated 3</Text>
-      </AnimatedContainer>
-      <AnimatedContainer
-        active
-        forwardDelay={1500}
-        inputRange={[0, 0.5, 0.75, 1]}
-        outputRange={['0deg', '90deg', '275deg', '0deg']}
-        transformKey="rotate"
-      >
-        <Text>Animated 465 </Text>
-      </AnimatedContainer>
-
-      <AnimatedContainer
-        active
-        forwardDelay={1500}
-        inputRange={[0, 0.5, 0.75, 1]}
-        outputRange={['coral', 'blue', 'red', 'white']}
-        transformKey="backgroundColor"
-        style={{ padding: 32, borderWidth: 2, borderColor: 'black' }}
-        useNativeDriver={false}
-        forwardAnimationDuration={5000}
-      >
-        <Text>Animated 4 </Text>
-      </AnimatedContainer>
-      <Text>Open up App.tsx to start working</Text>
+      {data.map((item, index) => {
+        return (
+          <SelectButton
+            key={item.id}
+            onPress={() => toggle(item, index)}
+            item={item}
+            isSelected={getIsSelected(item, index)}
+          />
+        );
+      })}
     </View>
   );
 }
